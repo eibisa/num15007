@@ -72,7 +72,7 @@
             margin: 0;
         }
 
-        /* Estilo para el contenedor de MÚLTIPLES LOGOS */
+        /* BARRA DE LOGOS (PC) */
         #logo-empresa {
             position: absolute;
             bottom: 14px;
@@ -84,44 +84,59 @@
             border: 1px solid #ccc;
             display: flex;
             align-items: center;
-            gap: 10px; /* Espacio horizontal entre logos */
-            flex-wrap: wrap; /* Si no caben en una fila, pasan a la siguiente */
+            gap: 10px;
+            flex-wrap: wrap;
             justify-content: flex-end;
-            max-width: calc(100% - 240px); /* Previene solaparse con la leyenda */
+            max-width: calc(100% - 240px); /* Evita colisión con la leyenda en PC */
         }
 
         #logo-empresa img {
-            height: 38px; /* Todos los logos se escalan a la misma altura en PC */
+            height: 38px;
             width: auto;
             object-fit: contain;
         }
 
-        /* Estilo para la leyenda */
+        /* LEYENDA (PC) */
         #mapa-leyenda {
             position: absolute;
             bottom: 14px;
             left: 10px;
             z-index: 1000;
-            background: rgba(255,255,255,0.8);
-            padding: 10px;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 8px;
             border-radius: 5px;
             border: 1px solid #ccc;
         }
         #mapa-leyenda img {
             max-width: 200px;
+            height: auto;
+            display: block;
         }
 
-        /* Adaptación para pantallas MÓVILES */
+        /* =========================================================================
+           ADAPTACIÓN PARA PANTALLAS MÓVILES (< 768px)
+           ========================================================================= */
         @media (max-width: 768px) {
+            /* Leyenda compacta en móvil */
+            #mapa-leyenda {
+                bottom: 5px;
+                left: 5px;
+                padding: 4px;
+            }
+            #mapa-leyenda img {
+                max-width: 105px; /* Tamaño reducido de la leyenda para no ocupar pantalla */
+            }
+
+            /* Logos compactos en móvil */
             #logo-empresa {
                 bottom: 5px;
                 right: 5px;
-                max-width: 95%;
-                gap: 6px;
-                padding: 4px 6px;
+                max-width: calc(100% - 125px); /* Garatiza que no invada el espacio de la leyenda */
+                gap: 4px;
+                padding: 3px 5px;
             }
             #logo-empresa img {
-                height: 22px; /* Reduce el tamaño en móviles para ahorrar espacio */
+                height: 20px; /* Logos reducidos proporcionalmente */
             }
         }
         </style>
@@ -129,18 +144,18 @@
     </head>
     <body>
 <div id="map">
-    <!-- BARRA MULTILOGO -->
+    <!-- BARRA MULTILOGO (INCLUYE LOGO.PNG) -->
     <div id="logo-empresa">
-        <img src="images/logo.png" alt="A Baña">
+        <img src="images/logo.png" alt="Eibisa Norte, S.L.">
         <img src="images/LOGO_A_BANA.JPG" alt="A Baña">
         <img src="images/LOGO_Terras_de_Compostela.jpg" alt="Terras de Compostela">
         <img src="images/LOGO_COFINANCIADO.JPG" alt="Cofinanciado">
         <img src="images/LOGO_LEADER.JPG" alt="Leader">
         <img src="images/LOGO_MINISTERIO.JPG" alt="Ministerio">
-        <img src="images/LOGOS_ICON_EIB.PNG" alt="EIB">
         <img src="images/LOGO_XUNTA.PNG" alt="Xunta de Galicia">
     </div>
 
+    <!-- LEYENDA RESPONSIVE -->
     <div id="mapa-leyenda">
         <img src="images/leyenda.png" alt="Leyenda de colores">
     </div>
