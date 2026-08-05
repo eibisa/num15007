@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="./resources/ol.css">
+        <link rel="stylesheet" href="resources/fontawesome-all.min.css">
+        <link rel="stylesheet" type="text/css" href="resources/horsey.min.css">
+        <link rel="stylesheet" type="text/css" href="resources/ol-search-layer.min.css">
+        <link href="resources/photon-geocoder-autocomplete.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
+        <link rel="stylesheet" href="./resources/qgis2web.css">
+        <style>
+        html, body {
+            background-color: #ffffff;
+        }
+        .ol-control > * {
+            background-color: #f8f8f8!important;
+            color: #444444!important;
+            border-radius: 0px;
+        }
+        .ol-attribution a, .gcd-gl-input::placeholder, .search-layer-input-search::placeholder {
+            color: #444444!important;
+        }
+        .search-layer-input-search {
+            background-color: #f8f8f8!important;
+        }
+        .ol-control > *:focus, .ol-control >*:hover {
+            background-color: rgba(248, 248, 248, 0.7)!important;
+        } 
+        .ol-control {
+            background-color: rgba(255,255,255,.4) !important;
+            padding: 2px !important;
+        } 
+        
+        /* Estilos para el nuevo buscador de Referencia Catastral */
+        #search-rc {
+            background-color: #f8f8f8 !important;
+            color: #444444 !important;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 6px 8px;
+            font-size: 12px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        #search-rc:focus {
+            outline: none;
+            border-color: #4a90e2;
+            background-color: #ffffff !important;
+            box-shadow: 0 0 4px rgba(74, 144, 226, 0.4);
+        }
+
+        /* Evitar que el contenedor Horsey de sugerencias tape otros elementos */
+        .horsey-suggestions {
+            max-height: 200px;
+            overflow-y: auto;
+            border-radius: 4px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        </style>
+
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Estilo para el contenedor de MÚLTIPLES LOGOS */
+        #logo-empresa {
+            position: absolute;
+            bottom: 14px;
+            right: 10px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Espacio horizontal entre logos */
+            flex-wrap: wrap; /* Si no caben en una fila, pasan a la siguiente */
+            justify-content: flex-end;
+            max-width: calc(100% - 240px); /* Previene solaparse con la leyenda */
+        }
+
+        #logo-empresa img {
+            height: 38px; /* Todos los logos se escalan a la misma altura en PC */
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* Estilo para la leyenda */
+        #mapa-leyenda {
+            position: absolute;
+            bottom: 14px;
+            left: 10px;
+            z-index: 1000;
+            background: rgba(255,255,255,0.8);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        #mapa-leyenda img {
+            max-width: 200px;
+        }
+
+        /* Adaptación para pantallas MÓVILES */
+        @media (max-width: 768px) {
+            #logo-empresa {
+                bottom: 5px;
+                right: 5px;
+                max-width: 95%;
+                gap: 6px;
+                padding: 4px 6px;
+            }
+            #logo-empresa img {
+                height: 22px; /* Reduce el tamaño en móviles para ahorrar espacio */
+            }
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+<div id="map">
+    <!-- BARRA MULTILOGO -->
+    <div id="logo-empresa">
+        <img src="images/logo.png" alt="A Baña">
+        <img src="images/LOGO_A_BANA.JPG" alt="A Baña">
+        <img src="images/LOGO_Terras_de_Compostela.jpg" alt="Terras de Compostela">
+        <img src="images/LOGO_COFINANCIADO.JPG" alt="Cofinanciado">
+        <img src="images/LOGO_LEADER.JPG" alt="Leader">
+        <img src="images/LOGO_MINISTERIO.JPG" alt="Ministerio">
+        <img src="images/LOGOS_ICON_EIB.PNG" alt="EIB">
+        <img src="images/LOGO_XUNTA.PNG" alt="Xunta de Galicia">
+    </div>
+
+    <div id="mapa-leyenda">
+        <img src="images/leyenda.png" alt="Leyenda de colores">
+    </div>
+
+    <div id="popup" class="ol-popup">
+        <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+        <div id="popup-content"></div>
+    </div>
+</div>
+        <script src="resources/qgis2web_expressions.js"></script>
+        <script src="./resources/functions.js"></script>
+        <script src="./resources/ol.js"></script>
+        <script src="resources/horsey.min.js"></script>
+        <script src="resources/ol-search-layer.js"></script>
+        <script src="./resources/ol-layerswitcher.js"></script>
+        <script src="resources/photon-geocoder-autocomplete.min.js"></script>
+        <script src="layers/EibCcl_Numeracion_Catastro_3.js"></script>
+        <script src="styles/EibCcl_Numeracion_Catastro_3_style.js"></script>
+        <script src="layers/Eib_Lugares_0.js"></script>
+        <script src="styles/Eib_Lugares_0_style.js"></script>
+        <script src="./layers/layers.js" type="text/javascript"></script> 
+        <script src="./resources/Autolinker.min.js"></script>
+        <script src="./resources/qgis2web.js"></script>
+        
+<script>
+    var observarPopup = new MutationObserver(function(mutations) {
+        observarPopup.disconnect();
+
+        var popupContent = document.getElementById('popup-content');
+        if (popupContent) {
+            var links = popupContent.getElementsByTagName('a');
+
+            for (var i = 0; i < links.length; i++) {
+                var url = links[i].href;
+                
+                if (url.includes("drive.google.com") && !links[i].querySelector('img')) {
+                    try {
+                        var fileId = url.split('/d/')[1].split('/')[0];
+                        var directImg = "https://lh3.googleusercontent.com/u/0/d/" + fileId;
+                        
+                        links[i].innerHTML = '<img src="' + directImg + '" style="width:120px; height:auto; border-radius:5px; border:1px solid #ccc; display:block; margin-top:5px;" alt="Ver imagen">';
+                    } catch (e) {
+                        console.error("Error al procesar enlace de Drive", e);
+                    }
+                }
+            }
+        }
+
+        conectarObservador();
+    });
+
+    function conectarObservador() {
+        var target = document.getElementById('popup');
+        if (target) {
+            observarPopup.observe(target, { childList: true, subtree: true });
+        }
+    }
+
+    conectarObservador();
+</script>
+        
+<script>
+    var areaLimitada = ol.proj.transformExtent([-8.857, 42.900, -8.650, 43.020], 'EPSG:4326', 'EPSG:3857');
+
+    function forzarLimite() {
+        var view = map.getView();
+        var currentCenter = view.getCenter();
+        
+        if (!ol.extent.containsCoordinate(areaLimitada, currentCenter)) {
+            var nuevoCentro = [
+                Math.max(areaLimitada[0], Math.min(areaLimitada[2], currentCenter[0])),
+                Math.max(areaLimitada[1], Math.min(areaLimitada[3], currentCenter[1]))
+            ];
+            view.setCenter(nuevoCentro);
+        }
+    }
+
+    map.getView().setCenter(ol.proj.fromLonLat([-8.758, 42.961]));
+    map.getView().setZoom(13);
+
+    map.on('postrender', forzarLimite);
+    
+    map.getView().setMinZoom(11); 
+</script>
+    </body>
+</html>
