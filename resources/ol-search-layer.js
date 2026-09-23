@@ -148,6 +148,64 @@ class SearchLayer extends ol.control.Control {
           }
         }
       });
+      
+      
+      
+inputRC.addEventListener('paste', function () {
+
+  setTimeout(function () {
+
+    const texto = inputRC.value.trim().toLowerCase();
+
+    if (texto.length < 4) return;
+
+    const features = source.getFeatures();
+
+    const coincidencias = features.filter(function (feat) {
+
+      const valor = feat.get(columnaCatastro);
+
+      if (!valor) return false;
+
+      return valor.toString()
+        .trim()
+        .toLowerCase()
+        .includes(texto);
+
+    });
+
+    console.log(
+      "Referencia pegada:",
+      texto,
+      "Coincidencias:",
+      coincidencias.length
+    );
+
+    if (coincidencias.length > 0) {
+
+      const feat = coincidencias[0];
+
+      const view = map.getView();
+
+      view.fit(feat.getGeometry().getExtent(), {
+        size: map.getSize(),
+        maxZoom: 19
+      });
+
+      select.getFeatures().clear();
+      select.getFeatures().push(feat);
+
+    }
+
+  }, 100);
+
+});
+      
+      
+      
+      
+      
+      
     };
 
     // Lanzar Horsey cuando la capa esté lista
